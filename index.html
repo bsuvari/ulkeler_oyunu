@@ -37,10 +37,9 @@ small{display:block;color:var(--mut);margin-top:14px}
 <h1>Ülke tahmin oyunu</h1>
 <p class="s">Listedeki gizli ülkeyi bul. Her tahminde sıra farkını söylerim.</p>
 <div class="row">
-<input id="in" type="text" list="dl" placeholder="Bir ülke yazın" autocomplete="off">
+<input id="in" type="text" placeholder="Bir ülke yazın" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 <button id="go">Tahmin et</button>
 </div>
-<datalist id="dl"></datalist>
 <div id="msg" aria-live="polite"></div>
 <ul id="log"></ul>
 <div class="foot">
@@ -50,14 +49,162 @@ small{display:block;color:var(--mut);margin-top:14px}
 <small>Liste alfabetik sıradadır. "Aşağıda" listenin sonuna, "yukarıda" başına doğru demektir.</small>
 </main>
 <script>
-var DEFAULT="Afganistan,Almanya,Amerika Birleşik Devletleri,Andorra,Angola,Antigua ve Barbuda,Arjantin,Arnavutluk,Avustralya,Avusturya,Azerbaycan,Bahamalar,Bahreyn,Bangladeş,Barbados,Belarus,Belçika,Belize,Benin,Birleşik Arap Emirlikleri,Birleşik Krallık,Bolivya,Bosna-Hersek,Botsvana,Brezilya,Brunei,Bulgaristan,Burkina Faso,Burundi,Butan,Cezayir,Çad,Çek Cumhuriyeti,Çin,Danimarka,Doğu Timor,Dominik Cumhuriyeti,Dominika,Ekvador,Ekvator Ginesi,El Salvador,Endonezya,Eritre,Ermenistan,Estonya,Esvatini,Etiyopya,Fas,Fiji,Fildişi Sahili,Filipinler,Filistin,Finlandiya,Fransa,Gabon,Gambiya,Gana,Gine,Gine-Bissau,Grenada,Guatemala,Guyana,Güney Afrika,Güney Kore,Güney Sudan,Gürcistan,Haiti,Hindistan,Hırvatistan,Hollanda,Honduras,Irak,İran,İrlanda,İspanya,İsrail,İsveç,İsviçre,İtalya,İzlanda,Jamaika,Japonya,Kamboçya,Kamerun,Kanada,Karadağ,Katar,Kazakistan,Kenya,Kırgızistan,Kiribati,Kolombiya,Komorlar,Kongo,Kongo Demokratik Cumhuriyeti,Kosova,Kosta Rika,Kuveyt,Kuzey Kore,Kuzey Makedonya,Küba,Laos,Lesotho,Letonya,Liberya,Libya,Liechtenstein,Litvanya,Lübnan,Lüksemburg,Macaristan,Madagaskar,Malavi,Maldivler,Malezya,Mali,Malta,Marshall Adaları,Meksika,Mısır,Mikronezya,Moğolistan,Moldova,Monako,Moritanya,Mozambik,Myanmar,Namibya,Nauru,Nepal,Nijer,Nijerya,Nikaragua,Norveç,Orta Afrika Cumhuriyeti,Özbekistan,Pakistan,Palau,Panama,Papua Yeni Gine,Paraguay,Peru,Polonya,Portekiz,Romanya,Ruanda,Rusya,Saint Kitts ve Nevis,Saint Lucia,Saint Vincent ve Grenadinler,Samoa,San Marino,Sao Tome ve Principe,Senegal,Seyşeller,Sırbistan,Sierra Leone,Singapur,Slovakya,Slovenya,Solomon Adaları,Somali,Sri Lanka,Sudan,Surinam,Suriye,Suudi Arabistan,Şili,Tacikistan,Tanzanya,Tayland,Tayvan,Togo,Tonga,Trinidad ve Tobago,Tunus,Tuvalu,Türkiye,Türkmenistan,Uganda,Ukrayna,Umman,Uruguay,Ürdün,Vanuatu,Vatikan,Venezuela,Vietnam,Yemen,Yeni Zelanda,Yeşil Burun Adaları,Yunanistan,Zambiya,Zimbabve".split(",");
+var DEFAULT=`Afganistan
+Almanya
+Amerika Birleşik Devletleri
+Andorra
+Angola
+Arjantin
+Arnavutluk
+Avustralya
+Avusturya
+Azerbaycan
+Bahamalar
+Bahreyn
+Bangladeş
+Belarus
+Belçika
+Birleşik Arap Emirlikleri
+Bolivya
+Bosna-Hersek
+Botsvana
+Brezilya
+Brunei
+Bulgaristan
+Burkina Faso
+Cabo Verde
+Cezayir
+Cibuti
+Çad
+Çekya
+Çin
+Danimarka
+Dominik Cumhuriyeti
+Ekvador
+Endonezya
+Ermenistan
+Estonya
+Etiyopya
+Fas
+Fiji
+Fildişi Sahili
+Filipinler
+Filistin
+Finlandiya
+Fransa
+Gambiya
+Gana
+Gine
+Guatemala
+Güney Afrika
+Güney Kore
+Gürcistan
+Haiti
+Hırvatistan
+Hindistan
+Hollanda
+Irak
+İngiltere
+İran
+İrlanda
+İspanya
+İsrail
+İsveç
+İsviçre
+İtalya
+İzlanda
+Jamaika
+Japonya
+Kamboçya
+Kamerun
+Kanada
+Karadağ
+Katar
+Kazakistan
+Kenya
+Kıbrıs
+Kırgızistan
+Kolombiya
+Kongo
+Kosta Rika
+Kuveyt
+Kuzey Kore
+Kuzey Makedonya
+Küba
+Laos
+Letonya
+Libya
+Litvanya
+Lübnan
+Lüksemburg
+Macaristan
+Madagaskar
+Maldivler
+Malezya
+Malta
+Meksika
+Mısır
+Moğolistan
+Moldova
+Monako
+Moritanya
+Mozambik
+Myanmar
+Namibya
+Nepal
+Nijer
+Nijerya
+Norveç
+Özbekistan
+Pakistan
+Panama
+Papua Yeni Gine
+Paraguay
+Peru
+Polonya
+Portekiz
+Romanya
+Ruanda
+Rusya
+Senegal
+Seyşeller
+Sırbistan
+Sierra Leone
+Singapur
+Slovakya
+Slovenya
+Somali
+Sri Lanka
+Sudan
+Suriye
+Suudi Arabistan
+Şili
+Tacikistan
+Tanzanya
+Tayland
+Trinidad ve Tobago
+Tunus
+Türkiye
+Türkmenistan
+Uganda
+Ukrayna
+Umman
+Uruguay
+Ürdün
+Vatikan
+Venezuela
+Vietnam
+Yemen
+Yeni Zelanda
+Yunanistan
+Zambiya
+Zimbabve`.split("\n").map(function(s){return s.trim()}).filter(Boolean);
 var L=DEFAULT,ans=0,done=false;
 var $=function(i){return document.getElementById(i)};
 function norm(s){return s.trim().toLocaleLowerCase("tr").replace(/\s+/g," ")}
 function start(){
  ans=Math.floor(Math.random()*L.length);done=false;
  $("log").innerHTML="";$("msg").textContent="";$("msg").className="";$("in").value="";$("in").disabled=false;$("go").disabled=false;
- var dl=$("dl");dl.innerHTML="";L.forEach(function(u){var o=document.createElement("option");o.value=u;dl.appendChild(o)});
  $("in").focus();
 }
 function guess(){

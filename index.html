@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ülke Tahmin Oyunu</title>
+<style>
+:root{--bg:#eef3f6;--ink:#14232e;--mut:#5b6b77;--card:#fff;--line:#cfdae2;--acc:#1f6f8b;--up:#b4531f;--down:#2d6a4f;--win:#2d6a4f}
+@media (prefers-color-scheme:dark){:root{--bg:#10181e;--ink:#e6eef3;--mut:#93a4b0;--card:#18232b;--line:#2b3b46;--acc:#6bb6d0;--up:#f0a070;--down:#7fcf9f;--win:#7fcf9f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;line-height:1.45}
+main{max-width:480px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.6rem;margin:0 0 4px}
+p.s{margin:0 0 18px;color:var(--mut)}
+.row{display:flex;gap:8px}
+input[type=text]{flex:1;min-width:0;font:inherit;font-size:1.05rem;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+input[type=text]:focus{outline:none;border-color:var(--acc)}
+button{font:inherit;font-weight:700;padding:12px 18px;border:0;border-radius:10px;background:var(--acc);color:#fff;cursor:pointer}
+button.g{background:transparent;color:var(--acc);border:2px solid var(--line)}
+#msg{min-height:1.5em;margin:10px 0 14px;font-weight:700}
+#msg.err{color:var(--up)}
+#msg.win{color:var(--win)}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px}
+li span{font-size:.95rem;color:var(--mut);text-align:right}
+li.yukari span{color:var(--up)}
+li.asagi span{color:var(--down)}
+li.dogru{border-color:var(--win);border-width:2px}
+li.dogru span{color:var(--win);font-weight:700}
+.foot{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+.foot input[type=file]{display:none}
+small{display:block;color:var(--mut);margin-top:14px}
+</style>
+</head>
+<body>
+<main>
+<h1>Ülke tahmin oyunu</h1>
+<p class="s">Listedeki gizli ülkeyi bul. Her tahminde sıra farkını söylerim.</p>
+<div class="row">
+<input id="in" type="text" list="dl" placeholder="Bir ülke yazın" autocomplete="off">
+<button id="go">Tahmin et</button>
+</div>
+<datalist id="dl"></datalist>
+<div id="msg" aria-live="polite"></div>
+<ul id="log"></ul>
+<div class="foot">
+<button class="g" id="new">Yeni oyun</button>
+<label style="font-weight:700;padding:12px 18px;border:2px solid var(--line);border-radius:10px;color:var(--acc);cursor:pointer">Kendi listemi yükle<input id="file" type="file" accept=".txt"></label>
+</div>
+<small>Liste alfabetik sıradadır. "Aşağıda" listenin sonuna, "yukarıda" başına doğru demektir.</small>
+</main>
+<script>
+var DEFAULT="Afganistan,Almanya,Amerika Birleşik Devletleri,Andorra,Angola,Antigua ve Barbuda,Arjantin,Arnavutluk,Avustralya,Avusturya,Azerbaycan,Bahamalar,Bahreyn,Bangladeş,Barbados,Belarus,Belçika,Belize,Benin,Birleşik Arap Emirlikleri,Birleşik Krallık,Bolivya,Bosna-Hersek,Botsvana,Brezilya,Brunei,Bulgaristan,Burkina Faso,Burundi,Butan,Cezayir,Çad,Çek Cumhuriyeti,Çin,Danimarka,Doğu Timor,Dominik Cumhuriyeti,Dominika,Ekvador,Ekvator Ginesi,El Salvador,Endonezya,Eritre,Ermenistan,Estonya,Esvatini,Etiyopya,Fas,Fiji,Fildişi Sahili,Filipinler,Filistin,Finlandiya,Fransa,Gabon,Gambiya,Gana,Gine,Gine-Bissau,Grenada,Guatemala,Guyana,Güney Afrika,Güney Kore,Güney Sudan,Gürcistan,Haiti,Hindistan,Hırvatistan,Hollanda,Honduras,Irak,İran,İrlanda,İspanya,İsrail,İsveç,İsviçre,İtalya,İzlanda,Jamaika,Japonya,Kamboçya,Kamerun,Kanada,Karadağ,Katar,Kazakistan,Kenya,Kırgızistan,Kiribati,Kolombiya,Komorlar,Kongo,Kongo Demokratik Cumhuriyeti,Kosova,Kosta Rika,Kuveyt,Kuzey Kore,Kuzey Makedonya,Küba,Laos,Lesotho,Letonya,Liberya,Libya,Liechtenstein,Litvanya,Lübnan,Lüksemburg,Macaristan,Madagaskar,Malavi,Maldivler,Malezya,Mali,Malta,Marshall Adaları,Meksika,Mısır,Mikronezya,Moğolistan,Moldova,Monako,Moritanya,Mozambik,Myanmar,Namibya,Nauru,Nepal,Nijer,Nijerya,Nikaragua,Norveç,Orta Afrika Cumhuriyeti,Özbekistan,Pakistan,Palau,Panama,Papua Yeni Gine,Paraguay,Peru,Polonya,Portekiz,Romanya,Ruanda,Rusya,Saint Kitts ve Nevis,Saint Lucia,Saint Vincent ve Grenadinler,Samoa,San Marino,Sao Tome ve Principe,Senegal,Seyşeller,Sırbistan,Sierra Leone,Singapur,Slovakya,Slovenya,Solomon Adaları,Somali,Sri Lanka,Sudan,Surinam,Suriye,Suudi Arabistan,Şili,Tacikistan,Tanzanya,Tayland,Tayvan,Togo,Tonga,Trinidad ve Tobago,Tunus,Tuvalu,Türkiye,Türkmenistan,Uganda,Ukrayna,Umman,Uruguay,Ürdün,Vanuatu,Vatikan,Venezuela,Vietnam,Yemen,Yeni Zelanda,Yeşil Burun Adaları,Yunanistan,Zambiya,Zimbabve".split(",");
+var L=DEFAULT,ans=0,done=false;
+var $=function(i){return document.getElementById(i)};
+function norm(s){return s.trim().toLocaleLowerCase("tr").replace(/\s+/g," ")}
+function start(){
+ ans=Math.floor(Math.random()*L.length);done=false;
+ $("log").innerHTML="";$("msg").textContent="";$("msg").className="";$("in").value="";$("in").disabled=false;$("go").disabled=false;
+ var dl=$("dl");dl.innerHTML="";L.forEach(function(u){var o=document.createElement("option");o.value=u;dl.appendChild(o)});
+ $("in").focus();
+}
+function guess(){
+ if(done)return;
+ var a=norm($("in").value);if(!a)return;
+ var i=-1;for(var k=0;k<L.length;k++){if(norm(L[k])===a){i=k;break}}
+ var m=$("msg");
+ if(i<0){m.className="err";m.textContent="Bu ülke listede yok, tekrar deneyin.";return}
+ var li=document.createElement("li"),b=document.createElement("b"),sp=document.createElement("span");
+ b.textContent=L[i];li.appendChild(b);li.appendChild(sp);
+ var d=Math.abs(i-ans);
+ if(i===ans){li.className="dogru";sp.textContent="Doğru!";m.className="win";m.textContent="Doğru! "+($("log").children.length+1)+" tahminde buldun.";done=true;$("in").disabled=true;$("go").disabled=true}
+ else if(i<ans){li.className="asagi";sp.textContent="Yanlış: "+d+" basamak aşağıda";m.className="";m.textContent=""}
+ else{li.className="yukari";sp.textContent="Yanlış: "+d+" basamak yukarıda";m.className="";m.textContent=""}
+ $("log").insertBefore(li,$("log").firstChild);
+ $("in").value="";
+ if(!done)$("in").focus();
+}
+$("go").onclick=guess;
+$("in").addEventListener("keydown",function(e){if(e.key==="Enter")guess()});
+$("new").onclick=start;
+$("file").onchange=function(e){
+ var f=e.target.files[0];if(!f)return;
+ var r=new FileReader();
+ r.onload=function(){var x=String(r.result).split(/\r?\n/).map(function(s){return s.trim()}).filter(Boolean);if(x.length>1){L=x;start()}};
+ r.readAsText(f,"UTF-8");
+};
+start();
+</script>
+</body>
+</html>
